@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 184b114f88a95144cb3dea88c639fb20, type: 3}
+  m_Name: PurplePotionSO
+  m_EditorClassIdentifier: 
+  potionType: 2
+  potionPrefab: {fileID: 1476139304970497824, guid: bd21f206ec0939742b5309c8ca868388,
+    type: 3}
+  potionParticle: {fileID: 2899737579443394913, guid: 4379d1c3595e2e943a0b6b68b5817495,
+    type: 3}

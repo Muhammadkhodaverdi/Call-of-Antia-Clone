@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,10 +9,17 @@ public class Board : MonoBehaviour
 {
     public static Board Instance { get; private set; }
 
+    public event EventHandler<OnPotionParticlesSpwanEventArgs> OnPotionParticlesSpwan;
+    public class OnPotionParticlesSpwanEventArgs : EventArgs
+    {
+        public float damage;
+    }
+
     [Header("Refrences")]
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private GameObject rowGameObject;
-    [SerializeField] private GameObject[] potionsPrefab;
+    [SerializeField] private List<Transform> potionParticleSpawnPointList;
+    [SerializeField] private PotionListSO potionListSO;
 
     [Header("Attributes")]
     [SerializeField] private int width;
@@ -67,8 +75,7 @@ public class Board : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                int randomIndex = Random.Range(0, potionsPrefab.Length);
-                GameObject potionGameObject = Instantiate(potionsPrefab[randomIndex], Vector3.zero, Quaternion.identity);
+                GameObject potionGameObject = Instantiate(potionListSO.GetRandomPotionPrefab(), Vector3.zero, Quaternion.identity);
 
                 potionGameObject.transform.SetParent(board[x, y].potionStandPos, false);
 
@@ -82,7 +89,7 @@ public class Board : MonoBehaviour
         }
         rowGameObject.SetActive(false);
 
-        if (CheckBoard())
+        if (CheckBoard(false))
         {
             Init();
         }
@@ -102,7 +109,7 @@ public class Board : MonoBehaviour
     #endregion
 
     #region Checking Board
-    public bool CheckBoard()
+    public bool CheckBoard(bool spawnParticle)
     {
         bool hasMatched = false;
 
@@ -136,6 +143,9 @@ public class Board : MonoBehaviour
                         if (matchedPotions.connectedPotions.Count >= 3)
                         {
                             MatchResult superMatchedPotions = SuperMatch(matchedPotions);
+
+                            if (spawnParticle)
+                                SpawnPotionParticle(potion.potionType, superMatchedPotions.direction);
 
                             potionsToRemove.AddRange(superMatchedPotions.connectedPotions);
 
@@ -281,7 +291,7 @@ public class Board : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
 
-        if (CheckBoard())
+        if (CheckBoard(true))
         {
             StartCoroutine(ProcessTurnOnMatchedBoard(true));
         }
@@ -303,7 +313,7 @@ public class Board : MonoBehaviour
         RemoveAndRefill(potionsToRemove);
         yield return new WaitForSeconds(0.4f);
 
-        if (CheckBoard())
+        if (CheckBoard(true))
         {
             StartCoroutine(ProcessTurnOnMatchedBoard(false));
         }
@@ -326,6 +336,8 @@ public class Board : MonoBehaviour
 
             //Clear Board at that location and create blank node
             board[tempX, tempY].Init(true, null);
+
+            GameObject potionParticle = potionListSO.GetPotionParticle(potion.potionType);
         }
 
         for (int x = 0; x < width; x++)
@@ -376,8 +388,7 @@ public class Board : MonoBehaviour
         int yIndex = FindIndexOfLowesNull(x);
         int locationToMove = height - yIndex;
         //Get a Random potion
-        int randomIndex = Random.Range(0, potionsPrefab.Length);
-        GameObject potionGameObject = Instantiate(potionsPrefab[randomIndex], board[x, height - 1].potionStandPos.position + new Vector3(0, 108f), Quaternion.identity, board[x, yIndex].potionStandPos);
+        GameObject potionGameObject = Instantiate(potionListSO.GetRandomPotionPrefab(), board[x, height - 1].potionStandPos.position + new Vector3(0, 108f), Quaternion.identity, board[x, yIndex].potionStandPos);
         //Set Coordinates
         potionGameObject.GetComponent<Potion>().SetCoordinates(x, yIndex);
         //Set it on the board
@@ -513,6 +524,35 @@ public class Board : MonoBehaviour
     }
 
     #endregion
+
+    private void SpawnPotionParticle(PotionType potionType, MatchDirection matchDirection)
+    {
+        if (matchDirection == MatchDirection.Horizontal || matchDirection == MatchDirection.Vertical)
+        {
+            Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[1].position, Quaternion.identity);
+
+            float damage = 25f;
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+        }
+        else if (matchDirection == MatchDirection.LongHorizontal || matchDirection == MatchDirection.LongVertical)
+        {
+            Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[0].position, Quaternion.identity);
+            Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[2].position, Quaternion.identity);
+
+            float damage = 50f;
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+        }
+        else if (matchDirection == MatchDirection.Super)
+        {
+            for (int i = 0; i < potionParticleSpawnPointList.Count; i++)
+            {
+                Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[i].position, Quaternion.identity);
+            }
+
+            float damage = 70f;
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+        }
+    }
 }
 
 public class MatchResult

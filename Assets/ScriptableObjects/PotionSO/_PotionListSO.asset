@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0604764c06f41d84a9940de1eded4c44, type: 3}
+  m_Name: _PotionListSO
+  m_EditorClassIdentifier: 
+  potionSOList:
+  - {fileID: 11400000, guid: 02368ab8e7a7794418692f775abe4f85, type: 2}
+  - {fileID: 11400000, guid: 6a277439eae366b4797d076cdde522af, type: 2}
+  - {fileID: 11400000, guid: 96a8fdb58eb559d4e95c05827e790b83, type: 2}
+  - {fileID: 11400000, guid: b9fa076601273714eb06e449afcd37c9, type: 2}
+  - {fileID: 11400000, guid: 97c06a9b80ba45841bf7c1b3ba09a5c5, type: 2}

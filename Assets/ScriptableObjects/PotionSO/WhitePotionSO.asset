@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 184b114f88a95144cb3dea88c639fb20, type: 3}
+  m_Name: WhitePotionSO
+  m_EditorClassIdentifier: 
+  potionType: 4
+  potionPrefab: {fileID: 1476139304970497824, guid: aec8f09c77a99184299103aa10a61f06,
+    type: 3}
+  potionParticle: {fileID: 5386240657151008689, guid: aab2c4e20a96d6843b801554eb244a0c,
+    type: 3}
