@@ -21,8 +21,8 @@ public class Potion : MonoBehaviour, IPointerClickHandler
     public int yCoordinate;
 
     public bool isMatched;
-    private Vector2 currentPos;
-    private Vector2 targetPos;
+    //private Vector2 currentPos;
+    //private Vector2 targetPos;
 
     public bool isMoving;
 
@@ -37,12 +37,12 @@ public class Potion : MonoBehaviour, IPointerClickHandler
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
-    public void MoveToTarget(Vector2 targetPos)
+    public void MoveToTarget(Transform potionStandPos)
     {
-        StartCoroutine(MoveCoroutine(targetPos));
+        StartCoroutine(MoveCoroutine(potionStandPos));
     }
 
-    private IEnumerator MoveCoroutine(Vector2 targetPos)
+    private IEnumerator MoveCoroutine(Transform potionStandPos)
     {
         isMoving = true;
 
@@ -57,14 +57,15 @@ public class Potion : MonoBehaviour, IPointerClickHandler
 
             t = elapsed / duration;
 
-            transform.position = Vector2.Lerp(startPos, targetPos, t);
+            transform.position = Vector2.Lerp(startPos, potionStandPos.position, t);
 
             elapsed += Time.deltaTime;
 
             yield return null;
         }
 
-        transform.position = targetPos;
+        transform.position = potionStandPos.position;
+        transform.SetParent(potionStandPos);
 
         isMoving = false;
     }

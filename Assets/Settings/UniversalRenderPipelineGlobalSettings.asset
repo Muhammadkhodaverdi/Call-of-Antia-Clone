@@ -42,12 +42,13 @@ MonoBehaviour:
       m_Keys: []
       m_Values: []
     bakingSets: []
+    parentAsset: {fileID: 0}
     sceneBounds:
       m_Keys: []
       m_Values: []
     hasProbeVolumes:
       m_Keys: []
-      m_Values: 
+      m_Values: []
   m_ShaderStrippingSetting:
     m_Version: 0
     m_ExportShaderVariants: 1

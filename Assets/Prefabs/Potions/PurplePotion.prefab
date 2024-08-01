@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 110}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6855577218536193433
 MonoBehaviour:
@@ -49,8 +49,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21438a7eed2a9304d817779fbdfb9e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refrence: {fileID: 0}
   potionType: 2
+  xCoordinate: 0
+  yCoordinate: 0
+  isMatched: 0
+  isMoving: 0
 --- !u!1 &2301734232795701479
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,7 +148,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 78, y: 108}
+  m_SizeDelta: {x: 65, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4429592739555722415
 CanvasRenderer:

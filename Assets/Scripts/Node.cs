@@ -14,7 +14,13 @@ public class Node : MonoBehaviour
 
     public GameObject potionGameObject;
 
+    public Transform potionStandPos;
+
     public Node(bool isUsable, GameObject potionGameObject)
+    {
+        Init(isUsable, potionGameObject);
+    }
+    public void Init(bool isUsable, GameObject potionGameObject)
     {
         this.isUsable = isUsable;
         this.potionGameObject = potionGameObject;
