@@ -18,12 +18,10 @@ public class Board : MonoBehaviour
     [Header("Refrences")]
 
     [SerializeField] private List<Node> nodeList;
-
-    [SerializeField] private PotionListSO potionListSO;
-
     [SerializeField] private List<Transform> potionParticleSpawnPointList;
-
+    [SerializeField] private PotionListSO potionListSO;
     [SerializeField] private CanvasGroup lockScreenCanvasGroup;
+    [SerializeField] private Transform uiRootGameObject;
 
 
     [Header("Attributes")]
@@ -31,6 +29,9 @@ public class Board : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private bool isProcessingMove;
     [SerializeField] List<Potion> potionsToRemove = new List<Potion>();
+    [SerializeField] private float normalMatchDamagePower = 25f;
+    [SerializeField] private float longMatchDamagePower = 50f;
+    [SerializeField] private float superMatchDamagePower = 75f;
 
 
     private Node[,] board;
@@ -86,12 +87,13 @@ public class Board : MonoBehaviour
         board = new Node[width, height];
 
         int i = 0;
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
 
-            for (int y = height - 1; y >= 0; y--)
+            for (int x = 0; x < width; x++)
             {
                 nodeList[i].Init(true, null);
+                nodeList[i].SetCoordinates(x, y);
                 board[x, y] = nodeList[i];
                 i++;
             }
@@ -121,7 +123,7 @@ public class Board : MonoBehaviour
 
     private void ClearBoard()
     {
-        foreach(Node node in nodeList)
+        foreach (Node node in nodeList)
         {
             node.Clear();
         }
@@ -419,8 +421,8 @@ public class Board : MonoBehaviour
         int index = FindIndexOfLowestNull(x);
         int locationToMoveTo = (height) - index;
         //get a random potion
-        GameObject newPotion = Instantiate(potionListSO.GetRandomPotionPrefab(), board[x, height - 1].potionStandPos.position, Quaternion.identity);
-        //newPotion.transform.SetParent(board[x, index].potionStandPos);
+        GameObject newPotion = Instantiate(potionListSO.GetRandomPotionPrefab(), board[x, height - 1].potionStandPos.position, Quaternion.identity,uiRootGameObject);
+        newPotion.transform.SetParent(null);
         //set Coordinates
         newPotion.GetComponent<Potion>().SetCoordinates(x, index);
         //set it on the potion board
@@ -564,16 +566,14 @@ public class Board : MonoBehaviour
         {
             Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[1].position, Quaternion.identity);
 
-            float damage = 25f;
-            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = normalMatchDamagePower });
         }
         else if (matchDirection == MatchDirection.LongHorizontal || matchDirection == MatchDirection.LongVertical)
         {
             Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[0].position, Quaternion.identity);
             Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[2].position, Quaternion.identity);
 
-            float damage = 50f;
-            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = longMatchDamagePower });
         }
         else if (matchDirection == MatchDirection.Super)
         {
@@ -582,8 +582,7 @@ public class Board : MonoBehaviour
                 Instantiate(potionListSO.GetPotionParticle(potionType), potionParticleSpawnPointList[i].position, Quaternion.identity);
             }
 
-            float damage = 70f;
-            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
+            OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = superMatchDamagePower });
         }
     }
 
@@ -597,7 +596,7 @@ public class Board : MonoBehaviour
     private void Disable()
     {
         enable = false;
-        float delay = 0.3f;
+        float delay = 0.2f;
         StartCoroutine(Fade(lockScreenCanvasGroup, 1, delay));
     }
     private IEnumerator Fade(CanvasGroup canvasGroup, float to, float delay)
