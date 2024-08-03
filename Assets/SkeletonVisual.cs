@@ -30,7 +30,7 @@ public class SkeletonVisual : MonoBehaviour
         {
             animator.Play(DIE);
         });
-        skeleton.OnPreAttack.AddListener(() =>
+        skeleton.OnAttack.AddListener(() =>
         {
             animator.Play(ATTACK);
         });
@@ -64,6 +64,7 @@ public class SkeletonVisual : MonoBehaviour
 
     private void AttackAnimationEndTrigger()
     {
+        Debug.Log("AttackAnimationEndTrigger");
         OnAttackAnimationEnd?.Invoke();
     }
     private IEnumerator PlayDamageAnimation(float delay)
