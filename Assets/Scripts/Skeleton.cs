@@ -8,7 +8,12 @@ public class Skeleton : MonoBehaviour, IEnemy
     public static Skeleton Instance { get; private set; }
 
     [HideInInspector] public UnityEvent OnDie;
-    [HideInInspector] public UnityEvent OnAttack;
+    [HideInInspector] public UnityEvent OnPreAttack;
+    [HideInInspector] public UnityEvent<OnAttackEventArgs> OnAttack;
+    public class OnAttackEventArgs : EventArgs
+    {
+        public float damage;
+    }
     [HideInInspector] public UnityEvent OnTakeDamage;
     [HideInInspector] public UnityEvent<OnHealthChangedEventArgs> OnHealthChanged;
     public class OnHealthChangedEventArgs : EventArgs
@@ -61,9 +66,11 @@ public class Skeleton : MonoBehaviour, IEnemy
             {
                 state = State.Idle;
                 OnStateChanged?.Invoke(new OnStateChangedEventArgs { state = state });
+                Attack();
 
                 onAttackState = false;
             }
+
         });
 
         health = maxHealth;
@@ -91,7 +98,7 @@ public class Skeleton : MonoBehaviour, IEnemy
             case State.Attack:
                 if (!onAttackState)
                 {
-                    Attack();
+                    PreAttack();
                     onAttackState = true;
                 }
                 break;
@@ -101,23 +108,30 @@ public class Skeleton : MonoBehaviour, IEnemy
                 break;
         }
     }
-    private void Attack()
+    private void PreAttack()
     {
         if (state == State.Die) return;
-        OnAttack?.Invoke();
+        OnPreAttack?.Invoke();
+    }
+
+    private void Attack()
+    {
+        OnAttack?.Invoke(new OnAttackEventArgs { damage = damagePower });
     }
     private void TakeDamage(float damage)
     {
         health -= damage;
-        OnHealthChanged?.Invoke(new OnHealthChangedEventArgs { health = this.health, maxHealth = this.maxHealth });
         if (health <= 0)
         {
+            health = 0;
             Die();
         }
         else
         {
             OnTakeDamage?.Invoke();
         }
+
+        OnHealthChanged?.Invoke(new OnHealthChangedEventArgs { health = this.health, maxHealth = this.maxHealth });
     }
 
     private void Die()
