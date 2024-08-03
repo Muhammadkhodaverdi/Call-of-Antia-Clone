@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GreenPotionSO
   m_EditorClassIdentifier: 
   potionType: 3
-  potionPrefab: {fileID: 1476139304970497824, guid: 501275e00d994344cbe11a6f164fee85,
+  potionPrefab: {fileID: 1546624691262566541, guid: 501275e00d994344cbe11a6f164fee85,
     type: 3}
   potionParticle: {fileID: 3621787460455843367, guid: 865ad7c5493172e499e752b000f748dc,
     type: 3}

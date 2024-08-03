@@ -114,7 +114,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 3.5}
+  m_AnchoredPosition: {x: 0, y: 3}
   m_SizeDelta: {x: 2, y: 0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2601727812389175207
@@ -188,7 +188,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4559699540961024998}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8fe317047b2104cbdd6bea56c4e1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 2
+  mode: 1
 --- !u!1 &4763975118947443088
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,8 +325,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1d1517c0f13a64f845d8cd76bdcc5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skeletonVisual: {fileID: 2070429805809129385}
   maxHealth: 200
   damagePower: 10
+  waitingToAttackTimerMax: 10
 --- !u!1 &7697838693634766755
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,6 +339,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4937716760358548422}
   - component: {fileID: 2070429805809129385}
+  - component: {fileID: 7775184054781704886}
   m_Layer: 0
   m_Name: Visuals
   m_TagString: Untagged
@@ -373,10 +376,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abead6f57cad6eb4eaab27f385459d60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnAttackAnimationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   skeleton: {fileID: 4482855037960971720}
-  animator: {fileID: 1685716294162042716}
+  animator: {fileID: 7775184054781704886}
   healthBarImage: {fileID: 3198753849962647880}
-  healthBarCanvasGroup: {fileID: 0}
+  healthBarCanvasGroup: {fileID: 5172500591524625375}
+--- !u!95 &7775184054781704886
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7697838693634766755}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 8e5268b64d7799e45ab8f77918545db1, type: 3}
+  m_Controller: {fileID: 9100000, guid: 989e8ebefe26806488667c0823f34b62, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &2324275721942079234
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -440,17 +468,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkeletonVisual
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3973760906528151646, guid: adeac7f451a5a754184ebdd3254a1707, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: adeac7f451a5a754184ebdd3254a1707, type: 3}
---- !u!95 &1685716294162042716 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 3973760906528151646, guid: adeac7f451a5a754184ebdd3254a1707,
-    type: 3}
-  m_PrefabInstance: {fileID: 2324275721942079234}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8778772418784738415 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6455078236430084973, guid: adeac7f451a5a754184ebdd3254a1707,

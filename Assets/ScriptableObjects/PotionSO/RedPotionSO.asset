@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RedPotionSO
   m_EditorClassIdentifier: 
   potionType: 0
-  potionPrefab: {fileID: 1476139304970497824, guid: 0ee21b5ada2abd744a01ba42693cc161,
+  potionPrefab: {fileID: 1546624691262566541, guid: 0ee21b5ada2abd744a01ba42693cc161,
     type: 3}
   potionParticle: {fileID: 4938924991243440839, guid: 38d895d5bc9f1eb43837c191d795063b,
     type: 3}

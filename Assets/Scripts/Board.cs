@@ -16,10 +16,15 @@ public class Board : MonoBehaviour
     }
 
     [Header("Refrences")]
-    [SerializeField] private GameObject nodePrefab;
-    [SerializeField] private GameObject rowGameObject;
-    [SerializeField] private List<Transform> potionParticleSpawnPointList;
+
+    [SerializeField] private List<Node> nodeList;
+
     [SerializeField] private PotionListSO potionListSO;
+
+    [SerializeField] private List<Transform> potionParticleSpawnPointList;
+
+    [SerializeField] private CanvasGroup lockScreenCanvasGroup;
+
 
     [Header("Attributes")]
     [SerializeField] private int width;
@@ -31,6 +36,8 @@ public class Board : MonoBehaviour
     private Node[,] board;
     private Potion selectedPotion;
 
+    bool enable = false;
+
     private void Awake()
     {
         Instance = this;
@@ -38,13 +45,35 @@ public class Board : MonoBehaviour
 
     private void Start()
     {
+        Enable();
+
         Init();
 
         Potion.OnAnyPotionClick += ((potion) =>
         {
+            if (!enable) return;
+
             if (isProcessingMove) return;
 
             SelectPotion(board[potion.x, potion.y].potionGameObject.GetComponent<Potion>());
+        });
+
+        Skeleton.Instance.OnStateChanged.AddListener((args) =>
+        {
+            switch (args.state)
+            {
+                case Skeleton.State.Idle:
+                    Enable();
+                    break;
+                case Skeleton.State.Attack:
+                    Disable();
+                    break;
+                case Skeleton.State.Die:
+                    Disable();
+                    break;
+                default:
+                    break;
+            }
         });
     }
 
@@ -53,21 +82,18 @@ public class Board : MonoBehaviour
     {
         ClearBoard();
 
-        rowGameObject.SetActive(true);
 
         board = new Node[width, height];
 
-
+        int i = 0;
         for (int x = 0; x < width; x++)
         {
-            GameObject row = Instantiate(rowGameObject, Vector3.zero, Quaternion.identity, transform);
 
             for (int y = height - 1; y >= 0; y--)
             {
-                GameObject nodeGameObject = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity, row.transform);
-                Node node = nodeGameObject.GetComponent<Node>();
-                node.Init(true, null);
-                board[x, y] = node;
+                nodeList[i].Init(true, null);
+                board[x, y] = nodeList[i];
+                i++;
             }
 
         }
@@ -87,8 +113,6 @@ public class Board : MonoBehaviour
             }
 
         }
-        rowGameObject.SetActive(false);
-
         if (CheckBoard(false))
         {
             Init();
@@ -97,12 +121,9 @@ public class Board : MonoBehaviour
 
     private void ClearBoard()
     {
-        foreach (Transform child in transform)
+        foreach(Node node in nodeList)
         {
-            if (child == rowGameObject.transform) continue;
-
-            Destroy(child.gameObject);
-
+            node.Clear();
         }
     }
 
@@ -131,6 +152,7 @@ public class Board : MonoBehaviour
                 if (board[x, y].isUsable)
                 {
                     //then proceed to get potion class in node.
+
                     Potion potion = board[x, y].potionGameObject.GetComponent<Potion>();
 
                     //ensure its not matched
@@ -274,10 +296,13 @@ public class Board : MonoBehaviour
 
         board[potionA.xCoordinate, potionA.yCoordinate].Init(true, board[potionB.xCoordinate, potionB.yCoordinate].potionGameObject);
 
+
         board[potionB.xCoordinate, potionB.yCoordinate].Init(true, tempGameObject);
 
+        //potionA.transform.SetParent(board[potionB.xCoordinate, potionB.yCoordinate].potionStandPos);
         potionA.MoveToTarget(board[potionB.xCoordinate, potionB.yCoordinate].potionStandPos);
 
+        //potionB.transform.SetParent(board[potionA.xCoordinate, potionA.yCoordinate].potionStandPos);
         potionB.MoveToTarget(board[potionA.xCoordinate, potionA.yCoordinate].potionStandPos);
 
         int tempXCoordinate = potionA.xCoordinate;
@@ -318,7 +343,6 @@ public class Board : MonoBehaviour
             StartCoroutine(ProcessTurnOnMatchedBoard(false));
         }
     }
-
     #endregion
 
     #region Cascading Potions 
@@ -336,8 +360,6 @@ public class Board : MonoBehaviour
 
             //Clear Board at that location and create blank node
             board[tempX, tempY].Init(true, null);
-
-            GameObject potionParticle = potionListSO.GetPotionParticle(potion.potionType);
         }
 
         for (int x = 0; x < width; x++)
@@ -354,28 +376,37 @@ public class Board : MonoBehaviour
 
     private void ReFillPotion(int x, int y)
     {
+        //y offset
         int yOffset = 1;
 
+        //while the cell above our current cell is null and we're below the height of the board
         while (y + yOffset < height && board[x, y + yOffset].potionGameObject == null)
         {
+            //increment y offset
             yOffset++;
         }
+
+        //we've either hit the top of the board or we found a potion
 
         if (y + yOffset < height && board[x, y + yOffset].potionGameObject != null)
         {
             //we've found a potion
+
             Potion potionAbove = board[x, y + yOffset].potionGameObject.GetComponent<Potion>();
 
-            //let's move it to the current location
+            //Move it to the correct location
+            //Vector3 targetPos = board[x, y].potionStandPos.position;
             //Move to location
+            // potionAbove.transform.SetParent(board[x, y].potionStandPos, false);
             potionAbove.MoveToTarget(board[x, y].potionStandPos);
-            //Update Coordinates
+            //update incidices
             potionAbove.SetCoordinates(x, y);
-            //Update Board
+            //update our potionBoard
             board[x, y].Init(true, board[x, y + yOffset].potionGameObject);
+            //set the location the potion came from to null
             board[x, y + yOffset].Init(true, null);
-
         }
+
         //if we've hit the top of the board without finding a potion
         if (y + yOffset == height)
         {
@@ -385,19 +416,21 @@ public class Board : MonoBehaviour
 
     private void SpawnPotionAtTop(int x)
     {
-        int yIndex = FindIndexOfLowesNull(x);
-        int locationToMove = height - yIndex;
-        //Get a Random potion
-        GameObject potionGameObject = Instantiate(potionListSO.GetRandomPotionPrefab(), board[x, height - 1].potionStandPos.position + new Vector3(0, 108f), Quaternion.identity, board[x, yIndex].potionStandPos);
-        //Set Coordinates
-        potionGameObject.GetComponent<Potion>().SetCoordinates(x, yIndex);
-        //Set it on the board
-        board[x, yIndex].Init(true, potionGameObject);
-        //Move it to that location
-        potionGameObject.GetComponent<Potion>().MoveToTarget(board[x, yIndex].potionStandPos);
+        int index = FindIndexOfLowestNull(x);
+        int locationToMoveTo = (height) - index;
+        //get a random potion
+        GameObject newPotion = Instantiate(potionListSO.GetRandomPotionPrefab(), board[x, height - 1].potionStandPos.position, Quaternion.identity);
+        //newPotion.transform.SetParent(board[x, index].potionStandPos);
+        //set Coordinates
+        newPotion.GetComponent<Potion>().SetCoordinates(x, index);
+        //set it on the potion board
+        board[x, index].Init(true, newPotion);
+        //move it to that location
+        //Vector3 targetPosition = board[x, index].potionStandPos.position;
+        newPotion.GetComponent<Potion>().MoveToTarget(board[x, index].potionStandPos);
     }
 
-    private int FindIndexOfLowesNull(int x)
+    private int FindIndexOfLowestNull(int x)
     {
         int lowestNull = 99;
         for (int y = height - 1; y >= 0; y--)
@@ -552,6 +585,37 @@ public class Board : MonoBehaviour
             float damage = 70f;
             OnPotionParticlesSpwan?.Invoke(this, new OnPotionParticlesSpwanEventArgs { damage = damage });
         }
+    }
+
+
+    private void Enable()
+    {
+        enable = true;
+        float delay = 0.1f;
+        StartCoroutine(Fade(lockScreenCanvasGroup, 0, delay));
+    }
+    private void Disable()
+    {
+        enable = false;
+        float delay = 0.3f;
+        StartCoroutine(Fade(lockScreenCanvasGroup, 1, delay));
+    }
+    private IEnumerator Fade(CanvasGroup canvasGroup, float to, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        float elapsed = 0f;
+        float duration = 0.5f;
+        float from = canvasGroup.alpha;
+        while (elapsed < duration)
+        {
+            canvasGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
+            elapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = to;
     }
 }
 

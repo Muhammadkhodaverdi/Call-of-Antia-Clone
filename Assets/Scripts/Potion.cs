@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class Potion : MonoBehaviour, IPointerClickHandler
 {
     public static Action<OnAnyPotionClickEventArgs> OnAnyPotionClick;
+
     public class OnAnyPotionClickEventArgs : EventArgs
     {
         public int x = 0;
@@ -21,8 +22,6 @@ public class Potion : MonoBehaviour, IPointerClickHandler
     public int yCoordinate;
 
     public bool isMatched;
-    //private Vector2 currentPos;
-    //private Vector2 targetPos;
 
     public bool isMoving;
 
@@ -66,7 +65,6 @@ public class Potion : MonoBehaviour, IPointerClickHandler
 
         transform.position = potionStandPos.position;
         transform.SetParent(potionStandPos);
-
         isMoving = false;
     }
     public void OnPointerClick(PointerEventData eventData)

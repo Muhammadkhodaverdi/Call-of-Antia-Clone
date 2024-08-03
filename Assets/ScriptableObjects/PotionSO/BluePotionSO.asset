@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BluePotionSO
   m_EditorClassIdentifier: 
   potionType: 1
-  potionPrefab: {fileID: 1476139304970497824, guid: 62c747232ac68cf458b9eb575803019d,
+  potionPrefab: {fileID: 1546624691262566541, guid: 62c747232ac68cf458b9eb575803019d,
     type: 3}
   potionParticle: {fileID: 8499210006836149317, guid: 2ea724a4d8e892e4a992dfe3722c554b,
     type: 3}

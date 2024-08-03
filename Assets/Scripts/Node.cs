@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Node : MonoBehaviour
 {
@@ -24,6 +25,14 @@ public class Node : MonoBehaviour
     {
         this.isUsable = isUsable;
         this.potionGameObject = potionGameObject;
+
+        foreach (Transform child in potionStandPos)
+        {
+            if (!child.GetComponent<Potion>())
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
     public void SetCoordinates(int x, int y)
     {
@@ -36,6 +45,12 @@ public class Node : MonoBehaviour
             coordinatesText.enabled = true;
         }
         coordinatesText.text = $"({x},{y})";
+    }
+
+    public void Clear()
+    {
+        Destroy(potionGameObject);
+        Init(isUsable, null);
     }
 
     private void Update()

@@ -6,6 +6,6 @@ using UnityEngine;
 public class PotionSO : ScriptableObject
 {
     public PotionType potionType;
-    public Transform potionPrefab;
+    public GameObject potionPrefab;
     public GameObject potionParticle;
 }

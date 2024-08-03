@@ -11,7 +11,7 @@ public class PotionListSO : ScriptableObject
     {
         int randomIndex = Random.Range(0, potionSOList.Count);
 
-        return potionSOList[randomIndex].potionPrefab.gameObject;
+        return potionSOList[randomIndex].potionPrefab;
     }
 
     public GameObject GetPotionParticle(PotionType potionType)

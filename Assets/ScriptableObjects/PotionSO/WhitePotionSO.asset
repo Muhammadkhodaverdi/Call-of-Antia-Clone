@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WhitePotionSO
   m_EditorClassIdentifier: 
   potionType: 4
-  potionPrefab: {fileID: 1476139304970497824, guid: aec8f09c77a99184299103aa10a61f06,
+  potionPrefab: {fileID: 1546624691262566541, guid: aec8f09c77a99184299103aa10a61f06,
     type: 3}
   potionParticle: {fileID: 5386240657151008689, guid: aab2c4e20a96d6843b801554eb244a0c,
     type: 3}

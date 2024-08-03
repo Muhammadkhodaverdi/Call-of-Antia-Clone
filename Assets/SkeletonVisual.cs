@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SkeletonVisual : MonoBehaviour
@@ -8,6 +9,8 @@ public class SkeletonVisual : MonoBehaviour
     private readonly string DIE = "Die";
     private readonly string ATTACK = "Attack";
     private readonly string DAMAGE = "Damage";
+
+    [HideInInspector] public UnityEvent OnAttackAnimationEnd;
 
     [Header("Refrences")]
     [SerializeField] private Skeleton skeleton;
@@ -17,26 +20,27 @@ public class SkeletonVisual : MonoBehaviour
 
     private void Awake()
     {
-        if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (animator == null) animator = GetComponent<Animator>();
         if (skeleton == null) skeleton = GetComponentInParent<Skeleton>();
     }
 
     private void Start()
     {
-        skeleton.OnDie += (senedr, args) =>
+        skeleton.OnDie.AddListener(() =>
         {
             animator.Play(DIE);
-        };
-        skeleton.OnAttack += (senedr, args) =>
+        });
+        skeleton.OnAttack.AddListener(() =>
         {
             animator.Play(ATTACK);
-        };
-        skeleton.OnTakeDamage += (senedr, args) =>
+        });
+        skeleton.OnTakeDamage.AddListener(() =>
         {
-            animator.Play(DAMAGE);
-        };
+            float delay = 0.3f;
+            StartCoroutine(PlayDamageAnimation(delay));
+        });
 
-        skeleton.OnHealthChanged += (sender, args) =>
+        skeleton.OnHealthChanged.AddListener((args) =>
         {
             if (args.health == args.maxHealth)
             {
@@ -55,9 +59,19 @@ public class SkeletonVisual : MonoBehaviour
             float filAmount = (args.health / args.maxHealth);
 
             healthBarImage.fillAmount = filAmount;
-        };
+        });
     }
 
+    private void AttackAnimationEndTrigger()
+    {
+        Debug.Log("AttackAnimationEndTrigger");
+        OnAttackAnimationEnd?.Invoke();
+    }
+    private IEnumerator PlayDamageAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        animator.Play(DAMAGE);
+    }
     private IEnumerator Fade(CanvasGroup canvasGroup, float to, float delay)
     {
         yield return new WaitForSeconds(delay);
